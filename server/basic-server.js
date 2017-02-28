@@ -1,3 +1,6 @@
+var handle = require('./request-handler.js');
+var handleRequest = handle.requestHandler;
+
 /* Import node's http module: */
 var http = require('http');
 
@@ -15,7 +18,7 @@ var port = 3000;
 var ip = '127.0.0.1';
 
 
-
+console.log(handleRequest);
 // We use node's http module to create a server.
 //
 // The function we pass to http.createServer will be used to handle all
