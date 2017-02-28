@@ -52,12 +52,18 @@ exports.requestHandler = function(request, response) {
   // other than plain text, like JSON or HTML.
   headers['Content-Type'] = 'application/json';
 
+  var body = [];
+
   if (request.method === 'POST') {
-    request.on('data', function (data) {
-      messages.results.push(data);
+    request.on('data', function (info) {
+      console.log(info);
+      body.push(info);
     });
     request.on('end', function () {
       console.log(messages);
+      // messages.results = Buffer.concat(messages.results).toString();
+      body = Buffer.concat(body).toString();
+      messages.results.push(body)
     });
     response.writeHead(201, headers);
     response.end('b water');
