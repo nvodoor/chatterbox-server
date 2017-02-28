@@ -16,6 +16,33 @@ var messages = {'results': []};
 var exports = module.exports = {};
 
 exports.requestHandler = function(request, response) {
+  
+  var defaultCorsHeaders = {
+    'access-control-allow-origin': '*',
+    'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'access-control-allow-headers': 'content-type, accept',
+    'access-control-max-age': 10, // Seconds.
+    'Content-Type' : 'application/json'
+  };
+
+  // See the note below about CORS headers.
+  var headers = defaultCorsHeaders;
+
+  var statusCode = 200;
+  console.log('line 31', request.method, request.url.substring(0, 17));
+  if (request.method === 'OPTIONS' && (request.url === '/classes/messages' || request.url === '/classes/messages?order=-createdAt&limit=1000')) {
+    response.writeHead(statusCode, headers);
+    response.end();
+  } else if (request.method === 'GET' && (request.url === '/classes/messages' || request.url === '/classes/messages?order=-createdAt&limit=1000' || request.url === '/classes/room')) {
+    console.log(JSON.stringify(messages));
+    response.writeHead(statusCode, headers);
+    response.end(JSON.stringify(messages));
+  } else if (request.method === 'GET') {
+    response.statusCode = 404;
+    response.end();
+  } else {
+
+
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -30,48 +57,42 @@ exports.requestHandler = function(request, response) {
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
-  console.log('Serving request type ' + request.method + ' for url ' + request.url);
+    // console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
 
-  // The outgoing status.
-  var statusCode = 200;
+    // The outgoing status.
 
-  var defaultCorsHeaders = {
-    'access-control-allow-origin': '*',
-    'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'access-control-allow-headers': 'content-type, accept',
-    'access-control-max-age': 10 // Seconds.
-  };
 
-  // See the note below about CORS headers.
-  var headers = defaultCorsHeaders;
+    // Tell the client we are sending them plain text.
+    //
+    // You will need to change this if you are sending something
+    // other than plain text, like JSON or HTML.
 
-  // Tell the client we are sending them plain text.
-  //
-  // You will need to change this if you are sending something
-  // other than plain text, like JSON or HTML.
-  headers['Content-Type'] = 'application/json';
+    var body = [];
 
-  var body = [];
+    if (request.method === 'POST' && (request.url === '/classes/messages' || request.url === '/classes/room')) {
+      // request.on('error', function(err) {
+      //   response.writeHead(404, headers);
+      // });
+      console.log(request.url);
+      request.on('data', function (info) {
+        // console.log(info);
+        body.push(info);
+      });
+      request.on('end', function () {
+        // console.log(messages);
+        // messages.results = Buffer.concat(messages.results).toString();
+        //body = Buffer.concat(body).toString();
+        messages.results.push(body.concat().toString());
+      });
+      response.writeHead(201, headers);
+      response.end('post received');
+    } else {
+      response.writeHead(statusCode, headers);
+      response.end(JSON.parse(messages));
+    }
 
-  if (request.method === 'POST') {
-    request.on('data', function (info) {
-      console.log(info);
-      body.push(info);
-    });
-    request.on('end', function () {
-      console.log(messages);
-      // messages.results = Buffer.concat(messages.results).toString();
-      body = Buffer.concat(body).toString();
-      messages.results.push(body)
-    });
-    response.writeHead(201, headers);
-    response.end('b water');
-  } else {
-    response.writeHead(statusCode, headers);
-    response.end(JSON.stringify(messages));
   }
-
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
  // response.writeHead(statusCode, headers);

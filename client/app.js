@@ -37,7 +37,7 @@ app.rooms = {'testRoom': true, 'lobby': true};
 app.send = function(message) {
   // This is the url you should use to communicate with the parse API server.
   $.ajax({
-    url: 'http://127.0.0.1:3000/',
+    url: 'http://127.0.0.1:3000/classes/messages',
     type: 'POST',
     contentType: 'application/json',
     data: JSON.stringify(message), 
@@ -55,7 +55,7 @@ app.send = function(message) {
 app.fetch = function() {
   $.ajax({
 	// This is the url you should use to communicate with the parse API server.
-	url: 'http://127.0.0.1:3000/',
+	url: 'http://127.0.0.1:3000/classes/messages',
 	type: 'GET',
   	data: {'order': '-createdAt', limit: '1000'},
     datatype: 'jsonp',
