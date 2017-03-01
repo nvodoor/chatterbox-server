@@ -17,7 +17,7 @@ exports.requestHandler = function(request, response) {
     'access-control-max-age': 10, // Seconds.
     'Content-Type': 'application/json'
   };
-
+  
   // See the note below about CORS headers.
   var headers = defaultCorsHeaders;
 
@@ -28,7 +28,7 @@ exports.requestHandler = function(request, response) {
   } else if (request.method === 'GET' && (request.url === '/classes/messages' || request.url === '/classes/messages?order=-createdAt&limit=1000')) {
     response.writeHead(statusCode, headers);
     response.end(JSON.stringify({results: messages}));
-  } else if (request.method === 'POST' && request.url === '/classes/messages') {
+  } else if (request.method === 'POST' && (request.url === '/classes/messages' || request.url === '/classes/messages?order=-createdAt&limit=1000')) {
     var data = '';
     request.on('data', function(chunk) {
       data += chunk;

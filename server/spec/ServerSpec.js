@@ -116,4 +116,57 @@ describe('Node Server Request Listener Function', function() {
       });
   });
 
+  it('Should 404 when the order at object is wrong', function() {
+    var req = new stubs.request('/classes/messages/order=', 'GET');
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    // Wait for response to return and then check status code
+    waitForThen(
+      function() { return res._ended; },
+      function() {
+        expect(res._responseCode).to.equal(404);
+      });
+  });
+
+  it('Should store multiple messages', function() {
+    var stubMsg1 = {
+      username: 'Bob',
+      message: 'Whats up'
+    };
+    var stubMsg2 = {
+      username: 'Kyle',
+      message: 'Hey Bob'
+    };
+    var req1 = new stubs.request('/classes/messages', 'POST', stubMsg1);
+    var res1 = new stubs.response();
+
+    var req2 = new stubs.request('/classes/messages', 'POST', stubMsg2);
+    var res2 = new stubs.response();
+
+    handler.requestHandler(req1, res1);
+
+    handler.requestHandler(req2, res2);
+
+      // Now if we request the log for that room the message we posted should be there:
+    req = new stubs.request('/classes/messages', 'GET');
+    res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    var messages = JSON.parse(res._data).results;
+    expect(messages.length).to.be.above(1);
+  });
+
+  it('Should respond with null for options request', function() {
+    var req = new stubs.request('/classes/messages', 'OPTIONS');
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    var messages = JSON.parse(res._data);
+    expect(messages).to.equal(null);
+  });
+
 });
