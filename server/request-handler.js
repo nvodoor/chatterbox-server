@@ -25,7 +25,7 @@ exports.requestHandler = function(request, response) {
   if (request.method === 'OPTIONS' && request.url === '/classes/messages') {
     response.writeHead(statusCode, headers);
     response.end(JSON.stringify(null));
-  } else if (request.method === 'GET' && request.url === '/classes/messages') {
+  } else if (request.method === 'GET' && (request.url === '/classes/messages' || request.url === '/classes/messages?order=-createdAt&limit=1000')) {
     response.writeHead(statusCode, headers);
     response.end(JSON.stringify({results: messages}));
   } else if (request.method === 'POST' && request.url === '/classes/messages') {
