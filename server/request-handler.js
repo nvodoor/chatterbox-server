@@ -15,20 +15,20 @@ exports.requestHandler = function(request, response) {
     'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'access-control-allow-headers': 'content-type, accept',
     'access-control-max-age': 10, // Seconds.
-    'Content-Type' : 'application/json'
+    'Content-Type': 'application/json'
   };
 
   // See the note below about CORS headers.
   var headers = defaultCorsHeaders;
 
   var statusCode = 200;
-  if (request.method === 'OPTIONS') {
+  if (request.method === 'OPTIONS' && request.url === '/classes/messages') {
     response.writeHead(statusCode, headers);
     response.end(JSON.stringify(null));
-  } else if (request.method === 'GET') {
+  } else if (request.method === 'GET' && request.url === '/classes/messages') {
     response.writeHead(statusCode, headers);
     response.end(JSON.stringify({results: messages}));
-  } else if (request.method === 'POST') {
+  } else if (request.method === 'POST' && request.url === '/classes/messages') {
     var data = '';
     request.on('data', function(chunk) {
       data += chunk;
